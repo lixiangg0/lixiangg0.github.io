@@ -106,7 +106,7 @@
         《Spark HA &amp; Yarn 配置》
       </div>
       <div class="post-meta">
-        <img src="tu/2.jpg">
+        <img src="tupian/GG棒.jpg">
         <div class="post-meta-name">天王盖地虎</div>
         <div class="post-meta-date">发布于 2024/06/12</div>
       </div>
@@ -115,33 +115,15 @@
       <div class="post-placeholder"></div>
       <div class="post-content-main">
         <div class="post-content">
-          <h1 id="《Spark-HA-Yarn-配置》"><a href="#《Spark-HA-Yarn-配置》" class="headerlink" title="《Spark HA &amp; Yarn 配置》"></a>《Spark HA &amp; Yarn 配置》</h1><h2 id="1-在配置Spark以使用YARN作为资源管理器时，高可用性-HA-配置涉及到配置YARN的高可用性以及Spark连接到正确的YARN-ResourceManager。"><a href="#1-在配置Spark以使用YARN作为资源管理器时，高可用性-HA-配置涉及到配置YARN的高可用性以及Spark连接到正确的YARN-ResourceManager。" class="headerlink" title="1.在配置Spark以使用YARN作为资源管理器时，高可用性(HA)配置涉及到配置YARN的高可用性以及Spark连接到正确的YARN ResourceManager。"></a>1.在配置Spark以使用YARN作为资源管理器时，高可用性(HA)配置涉及到配置YARN的高可用性以及Spark连接到正确的YARN ResourceManager。</h2><p>以下是配置Spark以在YARN HA模式下运行的基本步骤：</p>
-<p>确保YARN配置为高可用性。这通常涉及到ZooKeeper的使用来管理Active&#x2F;Standby ResourceManagers。</p>
-<h2 id="2-在Spark配置中指定YARN-ResourceManager的地址。通常，这是由Spark自动从YARN-ResourceManagers获取的，但是在某些情况下，可能需要直接指定ZooKeeper-quorum。"><a href="#2-在Spark配置中指定YARN-ResourceManager的地址。通常，这是由Spark自动从YARN-ResourceManagers获取的，但是在某些情况下，可能需要直接指定ZooKeeper-quorum。" class="headerlink" title="2.在Spark配置中指定YARN ResourceManager的地址。通常，这是由Spark自动从YARN ResourceManagers获取的，但是在某些情况下，可能需要直接指定ZooKeeper quorum。"></a>2.在Spark配置中指定YARN ResourceManager的地址。通常，这是由Spark自动从YARN ResourceManagers获取的，但是在某些情况下，可能需要直接指定ZooKeeper quorum。</h2><p>以下是相关的配置片段和参数：</p>
-<p>YARN配置（在yarn-site.xml）：</p>
-<property>
-  <name>yarn.resourcemanager.ha.enabled</name>
-  <value>true</value>
-</property>
-<property>
-  <name>yarn.resourcemanager.ha.rm-ids</name>
-  <value>rm1,rm2</value>
-</property>
-<property>
-  <name>yarn.resourcemanager.hostname.rm1</name>
-  <value>rm1-host</value>
-</property>
-<property>
-  <name>yarn.resourcemanager.hostname.rm2</name>
-  <value>rm2-host</value>
-</property>
-<property>
-  <name>yarn.resourcemanager.zk-address</name>
-  <value>zk1-host:2181,zk2-host:2181,zk3-host:2181</value>
-</property>
-Spark配置（在spark-defaults.conf或通过--conf参数传递）：
-
-<p>spark.yarn.resourcemanager.hostname&#x3D;<a href="http://rm1-host:8032,http://rm2-host:8032">http://rm1-host:8032,http://rm2-host:8032</a><br>spark.yarn.resourcemanager.address&#x3D;<YARN ResourceManager HA URL from ZooKeeper><br>在Spark连接到YARN时，它会自动检测ResourceManager的地址，并连接到当前活动的ResourceManager。</p>
+          <h1 id="《Spark-HA-Yarn-配置》"><a href="#《Spark-HA-Yarn-配置》" class="headerlink" title="《Spark HA &amp; Yarn 配置》"></a>《Spark HA &amp; Yarn 配置》</h1><p>在Spark中，高可用性（HA）通常指的是Spark自身的高可用性，即当Spark集群的一部分节点失效时，作业能够自动恢复执行。而YARN配置主要指的是如何在YARN上配置Spark作业的运行环境。</p>
+<p>Spark HA配置：</p>
+<p>Spark自身的HA配置依赖于所选择的部署方式，比如使用ZooKeeper进行管理。这里以使用ZooKeeper为例，配置spark-env.sh：</p>
+<p>export SPARK_DAEMON_JAVA_OPTS&#x3D;”-Dspark.deploy.recoveryMode&#x3D;ZOOKEEPER -Dspark.deploy.zookeeper.url&#x3D;zookeeper01:2181,zookeeper02:2181,zookeeper03:2181 -Dspark.deploy.zookeeper.dir&#x3D;&#x2F;spark”<br>YARN配置Spark作业：</p>
+<p>在YARN上配置Spark作业通常涉及到以下几个方面：</p>
+<p>1.配置spark-defaults.conf，设置YARN作为资源调度器：</p>
+<p>spark.master                     yarn<br>spark.submit.deployMode          cluster<br>2.配置spark-env.sh，设置YARN相关的环境变量：</p>
+<p>export HADOOP_CONF_DIR&#x3D;&#x2F;path&#x2F;to&#x2F;your&#x2F;hadoop&#x2F;conf<br>export YARN_CONF_DIR&#x3D;&#x2F;path&#x2F;to&#x2F;your&#x2F;yarn&#x2F;conf<br>3.提交Spark作业到YARN：</p>
+<p>.&#x2F;bin&#x2F;spark-submit –class org.apache.spark.examples.SparkPi <br>  –master yarn <br>  –deploy-mode cluster \  # 或者client<br>  –conf spark.some.config.option&#x3D;some-value <br>  &#x2F;path&#x2F;to&#x2F;your&#x2F;spark-application.jar <br>  100<br>以上是配置Spark以在YARN上运行的基本步骤。具体配置可能会根据Spark和Hadoop的版本以及集群的具体要求有所不同。</p>
 
         </div>
       </div>
@@ -215,7 +197,7 @@ Spark配置（在spark-defaults.conf或通过--conf参数传递）：
                 </li>
                 
                 <li class="footer-li">
-                    <a href="mailto:1563250958@qq.com" target="_blank">
+                    <a href="mailto:303622260@qq.com" target="_blank">
                         <i class="ri-mail-line"></i>
                     </a>
                 </li>
